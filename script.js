@@ -1,5 +1,7 @@
-const searchControls = document.querySelector(".search-controls");
-const searchInput = document.querySelector("#search-input");
+// const { log } = require("handlebars");
+
+// const searchControls = document.querySelector(".search-controls");
+// const searchInput = document.querySelector("#search-input");
 
 // function customHttp(){
 
@@ -17,28 +19,27 @@ const searchInput = document.querySelector("#search-input");
 //     }
 // }
 
-function myHttpRequest({ method, url } = {}, cb) {
-  try {
-      // const xhr = new XMLHttpRequest();
-  xhr.open(method, url);
-  xhr.addEventListener("load", () => {
-    if (Math.floor(xhr.status / 100) !== 2) {
-      return cb(`Error. Status code: ${xhr.status}`, xhr);
-    }
-    const response = JSON.parse(xhr.responseText);
-    cb(response);
-  });
+// function myHttpRequest({ method, url } = {}, cb) {
+//   try {
+//     // const xhr = new XMLHttpRequest();
+//     xhr.open(method, url);
+//     xhr.addEventListener("load", () => {
+//       if (Math.floor(xhr.status / 100) !== 2) {
+//         return cb(`Error. Status code: ${xhr.status}`, xhr);
+//       }
+//       const response = JSON.parse(xhr.responseText);
+//       cb(response);
+//     });
 
-  xhr.addEventListener("error", () => {
-    console.log(`Error. Status code: ${xhr.status}`);
-  });
-  } catch (error) {
-    cb(error)
-  }
-  
-  
-  xhr.send();
-}
+//     xhr.addEventListener("error", () => {
+//       console.log(`Error. Status code: ${xhr.status}`);
+//     });
+//   } catch (error) {
+//     cb(error);
+//   }
+
+//   xhr.send();
+// }
 
 // myHttpRequest(
 //   { method: "GET", url: "https://jsonplaceholder.typicode.com/posts" },
@@ -47,84 +48,148 @@ function myHttpRequest({ method, url } = {}, cb) {
 //       console.log(err);
 //     }
 //     console.log(res);
-    
+
 //   }
 // );
 
-function http(url, cb) {
-  return {
-    get(url, cb) { try {
-      // const xhr = new XMLHttpRequest();
-  xhr.open('GET', url);
-  xhr.addEventListener("load", () => {
-    if (Math.floor(xhr.status / 100) !== 2) {
-      return cb(`Error. Status code: ${xhr.status}`, xhr);
-    }
-    const response = JSON.parse(xhr.responseText);
-    cb(response);
-  });
+// function http() {
+//   return {
+//     get(url, cb) {
+//       try {
+//         const xhr = new XMLHttpRequest();
+//         xhr.open("GET", url);
+//         xhr.addEventListener("load", () => {
+//           if (Math.floor(xhr.status / 100) !== 2) {
+//             return cb(`Error. Status code: ${xhr.status}`, xhr);
+//           }
+//           const response = JSON.parse(xhr.responseText);
+//           cb(null, response);
+//         });
 
-  xhr.addEventListener("error", () => {
-    console.log(`Error. Status code: ${xhr.status}`);
-  });
-  } catch (error) {
-    cb(error)
-  }
-  
-  
-  xhr.send();},
-}
-}
+//         xhr.addEventListener("error", () => {
+//           console.log(`Error. Status code: ${xhr.status}`);
+//         });
+//               xhr.send();
+//       } catch (error) {
+//         cb(error);
+//       }
 
+//     },
+//   };
+// }
 
+// const myHttp = http();
+// myHttp.get("https://jsonplaceholder.typicode.com/posts", (error, resp) => {
+
+//     console.log(resp);
+// })
 
 // const http = customHttp();
 
-// const newService = (function() {
-//     const apiKey = '6ca821c6c34a44ab8249b5a27faa9929';
-//     const apiUrl = 'https://newsapi.org/v2';
+const searchControls = document.querySelector(".search-controls");
+const searchInput = document.querySelector(".search-input");
+// const searchForm = document.querySelector("#search-form");
+const form = document.forms['search-form'];
+const countrySelect = form.elements('');
 
-//     return{
-//         topHeadlines(country = 'ua', cb){
-//             http.get(`${apiUrl}/top-headlines?country=${country}&apiKey=${apiKey}`);
-//         },
-//         everything(query, cb){
-//             http.get(`${apiUrl}/everything?q=${query}&apiKey=${apiKey}`);
 
-//         }
-//     }
-// })()
+function customHttp() {
+  return {
+    get(url, cb) {
+      try {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", url);
+        xhr.addEventListener("load", () => {
+          if (Math.floor(xhr.status / 100) !== 2) {
+            cb(`Error. Status code: ${xhr.status}`, xhr);
+            return;
+          }
+          const response = JSON.parse(xhr.responseText);
+          cb(null, response);
+        });
 
-// // base news function
+        xhr.addEventListener("error", () => {
+          console.log("Error");
+        });
+        xhr.send();
+      } catch (error) {
+        cb(error);
+      }
+    },
+  };
+}
 
-// function loadNews(){
-//     newService.topHeadlines('ua', onGetResponse);
-//     }
+const http = customHttp();
 
-// // get response function
+const newService = (function () {
+  const apiKey = "6ca821c6c34a44ab8249b5a27faa9929";
+  const apiUrl = "https://newsapi.org/v2";
 
-// function onGetResponse(err, res){
-// console.log(res);
+  return {
+    topHeadlines(language = "ua", cb) {
+      http.get(
+        // `${apiUrl}/top-headlines?country=${country}&apiKey=${apiKey}`,
+        `${apiUrl}/everything?q=tesla&from=2025-07-31&sortBy=publishedAt&apiKey=${apiKey}&?language=${language}`, // &category=technology
 
-// }
+        cb
+      );
+    },
+    everything(query, cb) {
+      http.get(`${apiUrl}/everything?q=${query}&apiKey=${apiKey}`, cb);
+    },
+  };
+})();
 
-// // dom loaded
-// document.addEventListener('DOMContentLoaded', function(){
-//     loadNews();
-// });
+// base news function
 
-// // render new function
+function loadNews() {
+  newService.topHeadlines("ua", onGetResponse);
+}
 
-// function renderNews(){
-//     const newsContainer = document.querySelector('news-section__container');
-//     news.forEach(newsItem => {
-//         const el = newsTemplate(newsItem);
-//     });
+// get response function
 
-// }
+function onGetResponse(err, res) {
+  console.log("dqwwdq");
+  renderNews(res);
+}
 
-// function newsTemplate(news){
+// dom loaded
+document.addEventListener("DOMContentLoaded", function () {
+  loadNews();
+});
 
-// }
+// render new function
 
-// Web Angular 101 Lesson9 17 12
+function renderNews(news) {
+  const newsContainer = document.querySelector(".news-section__container");
+  // console.log(news);
+  let fragment = "";
+  news.articles.forEach((newsItem) => {
+    const el = newsTemplate(newsItem);
+    fragment += el;
+  });
+  newsContainer.insertAdjacentHTML("afterbegin", fragment);
+  
+}
+
+function newsTemplate({urlToImage, title, url, description}) {
+
+  return `
+<div class="card-news">
+    <div class="card-news__img">
+        <img src="${urlToImage}" alt="">
+        </div>
+        <div class="card-news__content">
+        <div class="card-news__title">${title || ''}}</div>
+        <div class="card-news__desc">
+        ${description || ''}
+        </div>
+        <a href="${url}" class="card-news__btn">View</a>
+    </div>
+
+</div>
+    `;
+}
+
+// Web Angular 101 Lesson9 17 12 finished
+// Web Angular 101 Lesson10 to start
