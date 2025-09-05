@@ -86,11 +86,17 @@
 
 // const http = customHttp();
 
-const searchControls = document.querySelector(".search-controls");
+const searchControls = document.querySelector("#country");
 const searchInput = document.querySelector(".search-input");
+const form = document.querySelector('#search-form');
 // const searchForm = document.querySelector("#search-form");
-const form = document.forms['search-form'];
-const countrySelect = form.elements('');
+
+const countrySelect = form.elements['country']; // Use the correct control name
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  loadNews();
+});
 
 
 function customHttp() {
@@ -126,10 +132,11 @@ const newService = (function () {
   const apiUrl = "https://newsapi.org/v2";
 
   return {
-    topHeadlines(language = "ua", cb) {
+    topHeadlines(language = "en", cb) {
       http.get(
         // `${apiUrl}/top-headlines?country=${country}&apiKey=${apiKey}`,
-        `${apiUrl}/everything?q=tesla&from=2025-07-31&sortBy=publishedAt&apiKey=${apiKey}&?language=${language}`, // &category=technology
+        // https://newsapi.org/v2/everything?q=tesla&from=2025-07-31At&apiKey=6ca821c6c34a44ab8249b5a27faa9929&language=en
+        `${apiUrl}/everything?q=tesla&from=2025-07-31At&apiKey=${apiKey}&language=${language}`, // &category=technology
 
         cb
       );
@@ -143,13 +150,16 @@ const newService = (function () {
 // base news function
 
 function loadNews() {
-  newService.topHeadlines("ua", onGetResponse);
+  const country = countrySelect.value;
+  
+  console.log(country);
+  newService.topHeadlines(country, onGetResponse);
 }
 
 // get response function
 
 function onGetResponse(err, res) {
-  console.log("dqwwdq");
+  // console.log("dqwwdq");
   renderNews(res);
 }
 
