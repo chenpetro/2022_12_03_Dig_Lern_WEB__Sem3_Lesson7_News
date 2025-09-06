@@ -88,16 +88,15 @@
 
 const searchControls = document.querySelector("#country");
 const searchInput = document.querySelector(".search-input");
-const form = document.querySelector('#search-form');
+const form = document.querySelector("#search-form");
 // const searchForm = document.querySelector("#search-form");
 
-const countrySelect = form.elements['country']; // Use the correct control name
+const countrySelect = form.elements["country"]; // Use the correct control name
 
-form.addEventListener('submit', e => {
+form.addEventListener("submit", (e) => {
   e.preventDefault();
   loadNews();
 });
-
 
 function customHttp() {
   return {
@@ -126,6 +125,27 @@ function customHttp() {
 }
 
 const http = customHttp();
+//////////////////////////////////////////
+
+// const newService = (function () {
+//   const apiKey = "6ca821c6c34a44ab8249b5a27faa9929";
+//   const apiUrl = "https://newsapi.org/v2";
+
+//   return {
+//     topHeadlines(country = "en", cb) {
+//       http.get(
+//         // `${apiUrl}/top-headlines?country=${country}&apiKey=${apiKey}`,
+//         // https://newsapi.org/v2/everything?q=tesla&from=2025-07-31At&apiKey=6ca821c6c34a44ab8249b5a27faa9929&language=en
+//         `${apiUrl}/everything?q=tesla&apiKey=${apiKey}&language=${country}`, // &category=technology
+
+//         cb
+//       );
+//     },
+//     everything(query, cb) {
+//       http.get(`${apiUrl}/everything?q=tesla&apiKey=${apiKey}&language=${country}`, cb);
+//     },
+//   };
+// })();
 
 const newService = (function () {
   const apiKey = "6ca821c6c34a44ab8249b5a27faa9929";
@@ -133,28 +153,44 @@ const newService = (function () {
 
   return {
     topHeadlines(language = "en", cb) {
-      http.get(
-        // `${apiUrl}/top-headlines?country=${country}&apiKey=${apiKey}`,
-        // https://newsapi.org/v2/everything?q=tesla&from=2025-07-31At&apiKey=6ca821c6c34a44ab8249b5a27faa9929&language=en
-        `${apiUrl}/everything?q=tesla&from=2025-07-31At&apiKey=${apiKey}&language=${language}`, // &category=technology
-
-        cb
-      );
+      const url = `${apiUrl}/everything?q=tesla&apiKey=${apiKey}&language=${language}`;
+      http.get(url, cb);
     },
-    everything(query, cb) {
-      http.get(`${apiUrl}/everything?q=${query}&apiKey=${apiKey}`, cb);
+    everything(query, language = "en", cb) {
+      const encodedQuery = encodeURIComponent(query);
+      const url = `${apiUrl}/everything?q=${encodedQuery}&apiKey=${apiKey}&language=${language}`;
+      http.get(url, cb);
     },
   };
 })();
+///////////////////////////////////////////////////////
 
 // base news function
 
+// function loadNews() {
+//   const country = countrySelect.value;
+//   const searchText = searchInput.value;
+//   if (!searchText) {
+//     newService.topHeadlines(country, onGetResponse);
+//   } else {
+//     newService.everything(searchText, onGetResponse);
+//   }
+//   console.log(country);
+// }
+/////////////////////////////////////////////////////////////
+
 function loadNews() {
-  const country = countrySelect.value;
-  
-  console.log(country);
-  newService.topHeadlines(country, onGetResponse);
+  const language = countrySelect.value || "en";
+  const searchText = searchInput.value.trim();
+  if (!searchText) {
+    newService.topHeadlines(language, onGetResponse);
+  } else {
+    newService.everything(searchText, language, onGetResponse);
+  }
+  console.log("Selected language:", language);
 }
+
+/////////////////////////////////////////////////////////////
 
 // get response function
 
@@ -179,20 +215,18 @@ function renderNews(news) {
     fragment += el;
   });
   newsContainer.insertAdjacentHTML("afterbegin", fragment);
-  
 }
 
-function newsTemplate({urlToImage, title, url, description}) {
-
+function newsTemplate({ urlToImage, title, url, description }) {
   return `
 <div class="card-news">
     <div class="card-news__img">
         <img src="${urlToImage}" alt="">
         </div>
         <div class="card-news__content">
-        <div class="card-news__title">${title || ''}}</div>
+        <div class="card-news__title">${title || ""}</div>
         <div class="card-news__desc">
-        ${description || ''}
+        ${description || ""}
         </div>
         <a href="${url}" class="card-news__btn">View</a>
     </div>
